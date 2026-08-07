@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="kn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2F4F3E">
+<meta name="color-scheme" content="light">
+<title>ಶಾಲಾ MDM ವರದಿ</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Kannada:wght@400;600;700&family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#20301F;
+    --chalk:#2F4F3E;
+    --chalk-dark:#233B2E;
+    --cream:#F4EEE0;
+    --cream-2:#FFFCF5;
+    --rice:#E8A33D;
+    --rice-dark:#C97F1F;
+    --line:#DCD3BC;
+    --ok:#2F7A4F;
+    --err:#B23A3A;
+    --radius:16px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--cream);
+    color:var(--ink);
+    font-family:"Noto Sans Kannada","Noto Sans",system-ui,-apple-system,sans-serif;
+    min-height:100vh;
+    padding-bottom:48px;
+  }
+  header{
+    background:var(--chalk);
+    color:var(--cream-2);
+    padding:22px 20px 60px;
+    position:relative;
+    overflow:hidden;
+  }
+  header::after{
+    content:"";
+    position:absolute;
+    left:0;right:0;bottom:-1px;
+    height:36px;
+    background:var(--cream);
+    border-radius:50% 50% 0 0 / 100% 100% 0 0;
+    transform:scaleX(1.4);
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    position:relative;
+    z-index:1;
+  }
+  .plate-icon{width:46px;height:46px;flex:none;}
+  .brand h1{
+    font-size:1.28rem;
+    margin:0;
+    line-height:1.25;
+    font-weight:700;
+    letter-spacing:.2px;
+  }
+  .brand p{
+    margin:2px 0 0;
+    font-size:.86rem;
+    color:#CFE0D5;
+  }
+  main{
+    max-width:480px;
+    margin:-38px auto 0;
+    padding:0 16px;
+    position:relative;
+    z-index:2;
+  }
+  .card{
+    background:var(--cream-2);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:20px 18px;
+    box-shadow:0 8px 24px rgba(35,59,46,.10);
+  }
+  .field{margin-bottom:16px;}
+  .field:last-child{margin-bottom:0;}
+  label{
+    display:block;
+    font-size:.92rem;
+    font-weight:700;
+    color:var(--chalk-dark);
+    margin-bottom:6px;
+  }
+  .hint{
+    font-size:.76rem;
+    color:#7A7160;
+    font-weight:400;
+    margin-left:6px;
+  }
+  input[type=text], input[type=date], input[type=number], select{
+    width:100%;
+    font-size:1.05rem;
+    padding:13px 14px;
+    border:1.6px solid var(--line);
+    border-radius:12px;
+    background:#fff;
+    color:var(--ink);
+    font-family:inherit;
+    -webkit-appearance:none;
+    appearance:none;
+    color-scheme:light;
+  }
+  select option{
+    color:var(--ink);
+    background:#fff;
+  }
+  select{
+    background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%232F4F3E" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>');
+    background-repeat:no-repeat;
+    background-position:right 12px center;
+    padding-right:38px;
+  }
+  input:focus, select:focus{
+    outline:none;
+    border-color:var(--rice-dark);
+    box-shadow:0 0 0 3px rgba(232,163,61,.25);
+  }
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+  .section-title{
+    font-size:.78rem;
+    text-transform:uppercase;
+    letter-spacing:.09em;
+    color:var(--rice-dark);
+    font-weight:700;
+    margin:22px 0 10px;
+  }
+  .section-title:first-of-type{margin-top:4px;}
+  button#submitBtn{
+    width:100%;
+    margin-top:22px;
+    padding:16px;
+    font-size:1.08rem;
+    font-weight:700;
+    color:#fff;
+    background:var(--chalk);
+    border:none;
+    border-radius:14px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    transition:transform .12s ease, background .2s ease;
+  }
+  button#submitBtn:active{transform:scale(.98);}
+  button#submitBtn:disabled{
+    background:#9AA79E;
+    cursor:not-allowed;
+  }
+  .spinner{
+    width:18px;height:18px;
+    border:2.6px solid rgba(255,255,255,.4);
+    border-top-color:#fff;
+    border-radius:50%;
+    animation:spin .7s linear infinite;
+    display:none;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .status{
+    margin-top:16px;
+    padding:14px 16px;
+    border-radius:12px;
+    font-size:.92rem;
+    font-weight:600;
+    display:none;
+    line-height:1.5;
+  }
+  .status.show{display:block;}
+  .status.ok{background:#E4F2E8;color:var(--ok);border:1px solid #BEE0C8;}
+  .status.err{background:#FBE9E9;color:var(--err);border:1px solid #F1C6C6;}
+  .status.info{background:#FDF2DC;color:var(--rice-dark);border:1px solid #F3DDAC;}
+  .locked-banner{
+    display:none;
+    align-items:flex-start;
+    gap:10px;
+    background:#E4F2E8;
+    border:1px solid #BEE0C8;
+    color:var(--ok);
+    border-radius:12px;
+    padding:14px 16px;
+    font-size:.92rem;
+    font-weight:600;
+    margin-bottom:16px;
+  }
+  .locked-banner.show{display:flex;}
+  .locked-banner svg{flex:none;margin-top:2px;}
+  footer{
+    max-width:480px;
+    margin:20px auto 0;
+    padding:0 20px;
+    font-size:.76rem;
+    color:#8B8371;
+    text-align:center;
+  }
+  .offline-pill{
+    display:none;
+    position:fixed;
+    left:50%;top:14px;
+    transform:translateX(-50%);
+    background:var(--ink);
+    color:#fff;
+    padding:8px 16px;
+    border-radius:999px;
+    font-size:.82rem;
+    z-index:50;
+    box-shadow:0 6px 18px rgba(0,0,0,.25);
+  }
+  .offline-pill.show{display:block;}
+</style>
+</head>
+<body>
+
+<div class="offline-pill" id="offlinePill">📶 ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕವಿಲ್ಲ</div>
+
+<header>
+  <div class="brand">
+    <svg class="plate-icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="50" cy="56" r="30" fill="#F4EEE0"/>
+      <circle cx="50" cy="56" r="18.5" fill="#E8A33D"/>
+      <ellipse cx="46" cy="49" rx="9.5" ry="7" fill="#FAF7EE"/>
+      <circle cx="46" cy="49" r="4" fill="#E0922A"/>
+      <line x1="34" y1="20" x2="31" y2="32" stroke="#F4EEE0" stroke-width="3" stroke-linecap="round"/>
+      <line x1="50" y1="16" x2="50" y2="30" stroke="#F4EEE0" stroke-width="3" stroke-linecap="round"/>
+      <line x1="66" y1="20" x2="69" y2="32" stroke="#F4EEE0" stroke-width="3" stroke-linecap="round"/>
+    </svg>
+    <div>
+      <h1>ಶಾಲಾ MDM ವರದಿ</h1>
+      <p>ದೈನಂದಿನ ಬಿಸಿಯೂಟ ಹಾಜರಾತಿ ನಮೂದು</p>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="card">
+
+    <div class="locked-banner" id="lockedBanner">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      <span id="lockedText">ಈ ತರಗತಿಗೆ ಈ ದಿನಾಂಕದ ವರದಿ ಈಗಾಗಲೇ ಸಲ್ಲಿಸಲಾಗಿದೆ.</span>
+    </div>
+
+    <form id="mdmForm" autocomplete="off">
+
+      <div class="section-title">ಶಾಲೆ &amp; ದಿನಾಂಕ</div>
+
+      <div class="field">
+        <label for="school">ಶಾಲೆಯ ಹೆಸರು</label>
+        <input type="text" id="school" name="school" required>
+      </div>
+
+      <div class="grid2">
+        <div class="field">
+          <label for="date">ದಿನಾಂಕ</label>
+          <input type="date" id="date" name="date" required>
+        </div>
+        <div class="field">
+          <label for="class">ತರಗತಿ</label>
+          <select id="class" name="class" required></select>
+        </div>
+      </div>
+
+      <div class="section-title">ಹಾಜರಾತಿ</div>
+
+      <div class="grid2">
+        <div class="field">
+          <label for="enrollment">ದಾಖಲಾತಿ</label>
+          <input type="number" inputmode="numeric" min="0" id="enrollment" name="enrollment" required>
+        </div>
+        <div class="field">
+          <label for="attendance">ಹಾಜರಾತಿ</label>
+          <input type="number" inputmode="numeric" min="0" id="attendance" name="attendance" required>
+        </div>
+      </div>
+
+      <div class="section-title">ಬಿಸಿಯೂಟ ವಿತರಣೆ</div>
+
+      <div class="grid2">
+        <div class="field">
+          <label for="egg">ಮೊಟ್ಟೆ <span class="hint">(ಸಂಖ್ಯೆ)</span></label>
+          <input type="number" inputmode="numeric" min="0" id="egg" name="egg" required>
+        </div>
+        <div class="field">
+          <label for="banana">ಬಾಳೆ ಹಣ್ಣು <span class="hint">(ಸಂಖ್ಯೆ)</span></label>
+          <input type="number" inputmode="numeric" min="0" id="banana" name="banana" required>
+        </div>
+      </div>
+
+      <button type="submit" id="submitBtn">
+        <span class="spinner" id="spinner"></span>
+        <span id="submitLabel">ಸಲ್ಲಿಸಿ</span>
+      </button>
+
+      <div class="status" id="statusBox"></div>
+    </form>
+  </div>
+
+  <footer>ಒಂದು ತರಗತಿಗೆ, ಒಂದು ದಿನಾಂಕಕ್ಕೆ ಒಂದೇ ಬಾರಿ ವರದಿ ಸಲ್ಲಿಸಬಹುದು</footer>
+</main>
+
+<script>
+  // MDM ವರದಿ ಆ್ಯಪ್ ಸಂರಚನೆ (Configuration)
+  const MDM_CONFIG = {
+    // ನಿಮ್ಮ Google Apps Script ವೆಬ್ ಆ್ಯಪ್ URL ಅನ್ನು ಇಲ್ಲಿ ಹಾಕಿ
+    SCRIPT_URL: "https://script.google.com/macros/s/AKfycbwvPVnBjmurhqMLhGYBJ-T1RXp-gItlnTPoQR2JkLl3BYk9lJCMmXTQ3Ta4pI-SUHrf/exec",
+
+    // ಡೀಫಾಲ್ಟ್ ಶಾಲೆಯ ಹೆಸರು
+    DEFAULT_SCHOOL: "GHPKBS KUSUGAL",
+
+    // ಡ್ರಾಪ್‌ಡೌನ್‌ನಲ್ಲಿ ತೋರಿಸಬೇಕಾದ ತರಗತಿಗಳ ಪಟ್ಟಿ
+    CLASSES: ["LKG", "UKG", "1", "2", "3", "4", "5", "6", "7"]
+  };
+</script>
+<script>
+  const form = document.getElementById("mdmForm");
+  const classSelect = document.getElementById("class");
+  const schoolInput = document.getElementById("school");
+  const dateInput = document.getElementById("date");
+  const submitBtn = document.getElementById("submitBtn");
+  const submitLabel = document.getElementById("submitLabel");
+  const spinner = document.getElementById("spinner");
+  const statusBox = document.getElementById("statusBox");
+  const lockedBanner = document.getElementById("lockedBanner");
+  const lockedText = document.getElementById("lockedText");
+  const offlinePill = document.getElementById("offlinePill");
+
+  // ---- initial setup ----
+  (MDM_CONFIG.CLASSES || []).forEach((c) => {
+    const opt = document.createElement("option");
+    opt.value = c;
+    opt.textContent = c;
+    classSelect.appendChild(opt);
+  });
+  schoolInput.value = MDM_CONFIG.DEFAULT_SCHOOL || "";
+
+  function todayStr() {
+    const d = new Date();
+    const tz = d.getTimezoneOffset() * 60000;
+    return new Date(d - tz).toISOString().slice(0, 10);
+  }
+  dateInput.value = todayStr();
+  dateInput.max = todayStr();
+
+  // ---- local "already submitted" guard (server also enforces this) ----
+  function submissionKey() {
+    return "mdm_sent__" + schoolInput.value.trim() + "__" + dateInput.value + "__" + classSelect.value;
+  }
+
+  function checkLocalLock() {
+    const sent = localStorage.getItem(submissionKey());
+    if (sent) {
+      lockedText.textContent = "ಈ ತರಗತಿ (" + classSelect.value + ") ಗೆ " + dateInput.value + " ದಿನಾಂಕದ ವರದಿ ಈಗಾಗಲೇ ಸಲ್ಲಿಸಲಾಗಿದೆ.";
+      lockedBanner.classList.add("show");
+      submitBtn.disabled = true;
+    } else {
+      lockedBanner.classList.remove("show");
+      submitBtn.disabled = false;
+    }
+  }
+  [classSelect, dateInput, schoolInput].forEach((el) =>
+    el.addEventListener("change", checkLocalLock)
+  );
+  checkLocalLock();
+
+  // ---- online/offline indicator ----
+  function updateOnlineStatus() {
+    offlinePill.classList.toggle("show", !navigator.onLine);
+  }
+  window.addEventListener("online", updateOnlineStatus);
+  window.addEventListener("offline", updateOnlineStatus);
+  updateOnlineStatus();
+
+  function showStatus(kind, msg) {
+    statusBox.className = "status show " + kind;
+    statusBox.textContent = msg;
+  }
+
+  function setLoading(loading) {
+    submitBtn.disabled = loading;
+    spinner.style.display = loading ? "inline-block" : "none";
+    submitLabel.textContent = loading ? "ಕಳುಹಿಸಲಾಗುತ್ತಿದೆ..." : "ಸಲ್ಲಿಸಿ";
+  }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    statusBox.className = "status";
+
+    if (!navigator.onLine) {
+      showStatus("err", "ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕವಿಲ್ಲ. ದಯವಿಟ್ಟು ನೆಟ್‌ವರ್ಕ್ ಇರುವಾಗ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.");
+      return;
+    }
+
+    const enrollmentVal = Number(document.getElementById("enrollment").value);
+    const attendanceVal = Number(document.getElementById("attendance").value);
+    const eggVal = Number(document.getElementById("egg").value);
+    const bananaVal = Number(document.getElementById("banana").value);
+
+    // ---- ಲಾಜಿಕ್ ಪರಿಶೀಲನೆ ----
+    if (attendanceVal > enrollmentVal) {
+      showStatus("err", "ಹಾಜರಾತಿ ಸಂಖ್ಯೆ ದಾಖಲಾತಿ ಸಂಖ್ಯೆಗಿಂತ ಹೆಚ್ಚಿರಬಾರದು.");
+      return;
+    }
+    if ((eggVal + bananaVal) > attendanceVal) {
+      showStatus("err", "ಮೊಟ್ಟೆ ಮತ್ತು ಬಾಳೆ ಹಣ್ಣು ಸಂಖ್ಯೆಗಳ ಒಟ್ಟು ಹಾಜರಾತಿ ಸಂಖ್ಯೆಗಿಂತ ಹೆಚ್ಚಿರಬಾರದು.");
+      return;
+    }
+
+    const payload = {
+      school: schoolInput.value.trim(),
+      date: dateInput.value,
+      class: classSelect.value,
+      enrollment: document.getElementById("enrollment").value,
+      attendance: document.getElementById("attendance").value,
+      egg: document.getElementById("egg").value,
+      banana: document.getElementById("banana").value
+    };
+
+    setLoading(true);
+    try {
+      const res = await fetch(MDM_CONFIG.SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+
+      if (data.status === "success") {
+        localStorage.setItem(submissionKey(), "1");
+        showStatus("ok", "ಯಶಸ್ವಿಯಾಗಿ ಸಲ್ಲಿಸಲಾಗಿದೆ!");
+        checkLocalLock();
+      } else if (data.status === "duplicate") {
+        localStorage.setItem(submissionKey(), "1");
+        showStatus("info", data.message || "ಈ ವರದಿ ಈಗಾಗಲೇ ಸಲ್ಲಿಸಲಾಗಿದೆ.");
+        checkLocalLock();
+      } else {
+        showStatus("err", data.message || "ದೋಷ ಸಂಭವಿಸಿದೆ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.");
+        setLoading(false);
+      }
+    } catch (err) {
+      showStatus("err", "ಕಳುಹಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ನೆಟ್‌ವರ್ಕ್ ಪರಿಶೀಲಿಸಿ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.");
+      setLoading(false);
+    }
+  });
+
+  // ---- PWA service worker ----
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("sw.js").catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>
